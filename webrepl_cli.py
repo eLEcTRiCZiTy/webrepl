@@ -166,10 +166,14 @@ def do_repl(ws):
                     ws.write(c, WEBREPL_FRAME_TXT)
             if ws.s in sel[0]:
                 c = ws.read(1, text_ok=True)
+                pc = None
                 while c is not None:
                     # pass character through to the console
                     oc = ord(c)
                     if oc in (8, 9, 10, 13, 27) or oc >= 32:
+                        #repair of line ending
+                        if oc == 10 and ord(pc) != 13:
+                            console.write(bytes([13]))
                         console.write(c)
                     else:
                         console.write(b"[%02x]" % ord(c))
@@ -177,6 +181,7 @@ def do_repl(ws):
                         c = ws.read(1)
                     else:
                         c = None
+                    pc = c
     finally:
         console.exit()
 
